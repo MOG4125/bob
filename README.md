@@ -1,4 +1,4 @@
-<img width="280" alt="IMG_3150-Photoroom" src="https://github.com/user-attachments/assets/9d1c7585-273b-4e24-8037-7455e7857aca" />
+<img width="350" alt="IMG_3150-Photoroom" src="https://github.com/user-attachments/assets/9d1c7585-273b-4e24-8037-7455e7857aca" />
 
 # Bob: A Minimalist Python Package Manager
 
