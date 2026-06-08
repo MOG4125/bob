@@ -6,20 +6,33 @@
 
 ## Table of Contents
 1. [Features](#features)
-2. [Prerequisites](#prerequisites)
-3. [Installation](#installation)
-4. [Usage](#usage)
-5. [Troubleshooting](#troubleshooting)
-6. [Project Structure](#project-structure)
-7. [Contribution](#contribution)
-8. [License](#license)
+2. [Automatic Updates](#automatic-updates)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [Troubleshooting](#troubleshooting)
+7. [Project Structure](#project-structure)
+8. [Contribution](#contribution)
+9. [License](#license)
 
 ---
 
 ## Features
 * **Intuitive CLI:** Simple commands for standard tasks.
+* **Auto-Updates:** Automatically checks PyPI for the latest versions of your dependencies.
 * **Virtual Environment Friendly:** Built to work seamlessly within your existing Python workflows.
 * **Extensible:** Minimal codebase that is easy to fork and build upon.
+
+## Automatic Updates
+`bob` takes the hassle out of dependency management. When you install or manage a package, `bob` performs a background check against the PyPI index:
+
+1. **Version Resolution:** `bob` queries the PyPI API for the package's latest metadata.
+2. **Comparison:** It compares the version you have installed against the latest release on PyPI.
+3. **Smart Upgrade:** If an update is detected, `bob` automatically performs an upgrade. 
+
+To keep your workflow efficient, `bob` uses a local cache, checking for updates at most once every 24 hours.
+
+
 
 ## Prerequisites
 * **Python 3.8+**
