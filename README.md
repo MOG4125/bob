@@ -1,7 +1,8 @@
 <img width="350" alt="IMG_3150-Photoroom" src="https://github.com/user-attachments/assets/9d1c7585-273b-4e24-8037-7455e7857aca" />
 
 # Bob: A Minimalist Python Package Manager
- P.S. This project is still in very early beta, even this README isn't fully ready yet, it will soon though, don't worry (:
+ # P.S. This project is still in very early beta, even this README isn't fully ready yet, it will soon though, don't worry (:
+
 **Bob** is a lightweight, command-line-first package manager for Python. It is designed to be a transparent wrapper around `pip`, providing a streamlined interface for managing project dependencies without the overhead of more complex tools.
 
 ---
