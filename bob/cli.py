@@ -1,56 +1,65 @@
-import argparse
-import subprocess
 import sys
-import json
-import urllib.request
+import subprocess
+import argparse
 import os
-import time
 
-def check_for_updates(package_name):
-    """Checks PyPI and upgrades if a new version exists (once per 24 hours)."""
-    cache_file = ".bob_update_cache"
-    
-    # 24-hour interval in seconds
-    if os.path.exists(cache_file):
-        if (time.time() - os.path.getmtime(cache_file)) < 86400:
-            return
-
+def run_pip(args):
+    """Helper to run pip commands safely."""
     try:
-        url = f"https://pypi.org/pypi/{package_name}/json"
-        with urllib.request.urlopen(url, timeout=2) as response:
-            data = json.loads(response.read().decode())
-            latest_version = data["info"]["version"]
-            print(f"--- bob: Checking for updates for {package_name} ---")
-            subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", package_name])
-            # Update cache timestamp
-            with open(cache_file, "w") as f:
-                f.write(str(time.time()))
-    except Exception:
-        pass 
+        subprocess.check_call([sys.executable, "-m", "pip"] + args)
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 def install(package):
-    print(f"--- bob: Installing {package} ---")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-    check_for_updates(package)
+    print(f"Installing {package}...")
+    run_pip(["install", package])
 
-def list_packages():
-    print("--- bob: Installed packages ---")
-    subprocess.check_call([sys.executable, "-m", "pip", "list"])
+def uninstall(package):
+    print(f"Uninstalling {package}...")
+    # -y flag automatically confirms the uninstall
+    run_pip(["uninstall", "-y", package])
+
+def sync():
+    """Syncs the environment with requirements.bob."""
+    if not os.path.exists("requirements.bob"):
+        print("Error: requirements.bob file not found.")
+        return
+
+    with open("requirements.bob", "r") as f:
+        packages = [line.strip() for line in f if line.strip()]
+    
+    if not packages:
+        print("requirements.bob is empty.")
+        return
+
+    print("Synchronizing environment...")
+    run_pip(["install", "--upgrade"] + packages)
+    print("Sync complete.")
 
 def main():
-    parser = argparse.ArgumentParser(description="Bob: A simple Python package manager")
+    parser = argparse.ArgumentParser(description="Bob: Minimalist Package Manager")
     subparsers = parser.add_subparsers(dest="command")
 
-    install_parser = subparsers.add_parser("install")
-    install_parser.add_argument("package", help="Name of the package")
-    subparsers.add_parser("list")
+    # Install command
+    parser_install = subparsers.add_parser("install")
+    parser_install.add_argument("package")
+
+    # Uninstall command
+    parser_uninstall = subparsers.add_parser("uninstall")
+    parser_uninstall.add_argument("package")
+
+    # Sync command
+    subparsers.add_parser("sync")
 
     args = parser.parse_args()
 
     if args.command == "install":
         install(args.package)
-    elif args.command == "list":
-        list_packages()
+    elif args.command == "uninstall":
+        uninstall(args.package)
+    elif args.command == "sync":
+        sync()
     else:
         parser.print_help()
 
