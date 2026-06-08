@@ -1,0 +1,3 @@
+# List your core dependencies here
+requests
+flask
