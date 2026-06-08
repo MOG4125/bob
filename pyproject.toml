@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "bob-pkg"
 version = "0.1.0"
 description = "A minimalist Python package manager"
-authors = [{name = "Your Name", email = "your-email@example.com"}]
+authors = [{name = "MOG.", email = "caiiummog@gmail.com"}]
 requires-python = ">=3.8"
 dependencies = []
 
