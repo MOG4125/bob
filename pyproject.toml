@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bob-pkg"
-version = "0.1.2"
+version = "0.1.3"
 description = "A minimalist Python package manager"
 authors = [{name = "MOG.", email = "caiiummog@gmail.com"}]
 readme = "README.md"
