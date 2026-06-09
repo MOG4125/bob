@@ -1,67 +1,66 @@
 import sys
-import subprocess
-import argparse
 import os
 
-def run_pip(args):
-    """Helper to run pip commands safely."""
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip"] + args)
-        return True
-    except subprocess.CalledProcessError:
-        return False
+def run_pip(args, dry_run=False):
+    """Internal helper to execute pip with performance-optimized flags."""
+    # Build the base command
+    cmd = [sys.executable, "-m", "pip"] + args + [
+        "--disable-pip-version-check", 
+        "--no-input",
+        "--quiet"
+    ]
+    
+    # Handle Ghost Mode (Dry Run)
+    if dry_run:
+        cmd.append("--dry-run")
+        print("--- Ghost Mode: Dry Run (No changes will be made) ---")
 
-def install(package):
+    import subprocess # Lazy loading
+    subprocess.check_call(cmd)
+
+def install(package, dry_run=False):
     print(f"Installing {package}...")
-    run_pip(["install", package])
+    run_pip(["install", package], dry_run=dry_run)
 
 def uninstall(package):
     print(f"Uninstalling {package}...")
-    # -y flag automatically confirms the uninstall
     run_pip(["uninstall", "-y", package])
 
 def sync():
-    """Syncs the environment with requirements.bob."""
     if not os.path.exists("requirements.bob"):
         print("Error: requirements.bob file not found.")
         return
 
-    with open("requirements.bob", "r") as f:
-        packages = [line.strip() for line in f if line.strip()]
-    
-    if not packages:
-        print("requirements.bob is empty.")
-        return
-
-    print("Synchronizing environment...")
-    run_pip(["install", "--upgrade"] + packages)
+    print("Synchronizing environment (optimized)...")
+    run_pip(["install", "-r", "requirements.bob", "--upgrade"])
     print("Sync complete.")
 
-def main():
-    parser = argparse.ArgumentParser(description="Bob: Minimalist Package Manager")
-    subparsers = parser.add_subparsers(dest="command")
-
-    # Install command
-    parser_install = subparsers.add_parser("install")
-    parser_install.add_argument("package")
-
-    # Uninstall command
-    parser_uninstall = subparsers.add_parser("uninstall")
-    parser_uninstall.add_argument("package")
-
-    # Sync command
-    subparsers.add_parser("sync")
-
-    args = parser.parse_args()
-
-    if args.command == "install":
-        install(args.package)
-    elif args.command == "uninstall":
-        uninstall(args.package)
-    elif args.command == "sync":
-        sync()
-    else:
-        parser.print_help()
+def check():
+    """Checks for outdated packages using Ghost Mode logic."""
+    if not os.path.exists("requirements.bob"):
+        print("Error: requirements.bob file not found.")
+        return
+    
+    print("Checking dependencies for updates...")
+    run_pip(["list", "--outdated", "--format=columns"])
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: bob <command> [args]")
+        sys.exit(1)
+        
+    command = sys.argv[1]
+    
+    # Logic for commands
+    if command == "install":
+        # Check if user requested dry run: bob install <pkg> --dry-run
+        is_dry = "--dry-run" in sys.argv
+        package = sys.argv[2] if len(sys.argv) > 2 else None
+        if package:
+            install(package, dry_run=is_dry)
+    elif command == "uninstall":
+        uninstall(sys.argv[2])
+    elif command == "sync":
+        sync()
+    elif command == "check":
+        check()
